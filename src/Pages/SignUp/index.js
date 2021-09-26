@@ -19,6 +19,12 @@ function SignUp() {
         "Senha deve conter ao menos uma letra maiúscula\n, uma minúscula, um número e um caracter especial!"
       )
       .required("Campo Obrigatório"),
+    bio: yup
+      .string()
+      .min(50, "Mínimo de 50 caracteres")
+      .required("Campo Obrigatório"),
+    contact: yup.string().required("Campo Obrigatório"),
+    module: yup.string().required("Campo Obrigatório"),
     passwordConfirm: yup
       .string()
       .oneOf([yup.ref("password")], "Senhas Diferentes")
@@ -58,6 +64,30 @@ function SignUp() {
               label="Email"
               placeholder="Seu melhor email"
               error={errors.email?.message}
+            />
+            <Input
+              register={register}
+              icon={FiUser}
+              label="Biografia"
+              placeholder="Conte-nos mais sobre você"
+              name="bio"
+              error={errors.bio?.message}
+            />
+            <Input
+              register={register}
+              icon={FiUser}
+              label="Contato"
+              placeholder="Contato"
+              name="contact"
+              error={errors.contact?.message}
+            />
+            <Input
+              register={register}
+              icon={FiUser}
+              label="Módulo Atual"
+              placeholder="Qual o seu módulo no curso atualmente?"
+              name="module"
+              error={errors.module?.message}
             />
             <Input
               register={register}
