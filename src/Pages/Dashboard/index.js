@@ -16,6 +16,16 @@ function Dashboard({ authenticated }) {
   const [userData, setUserData] = useState([]);
   const { register, handleSubmit } = useForm();
 
+  function getUserData() {
+    api
+      .get("/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => setUserData(response.data));
+  }
+
   function loadTechs() {
     api
       .get("/profile", {
@@ -34,7 +44,6 @@ function Dashboard({ authenticated }) {
         }));
         setTechs(apiTechs);
       })
-      .then((response) => setUserData(response.data))
       .catch((err) => console.log(err));
   }
 
@@ -51,6 +60,10 @@ function Dashboard({ authenticated }) {
 
   useEffect(() => {
     loadTechs();
+  }, []);
+
+  useEffect(() => {
+    getUserData();
   }, []);
 
   const onSubmit = (tech) => {
@@ -72,7 +85,6 @@ function Dashboard({ authenticated }) {
       )
       .then((_) => loadTechs());
   };
-  console.log(techs);
 
   if (!authenticated) {
     return <Redirect to="/login" />;

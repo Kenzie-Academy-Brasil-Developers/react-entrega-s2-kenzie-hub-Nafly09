@@ -24,7 +24,13 @@ function SignUp({ authenticated, setAuthenticated }) {
       .required("Campo Obrigatório"),
     bio: yup.string().required("Campo Obrigatório"),
     contact: yup.string().required("Campo Obrigatório"),
-    course_module: yup.string().required("Campo Obrigatório"),
+    course_module: yup
+      .string()
+      .matches(
+        /(Primeiro módulo \(Introdução ao Frontend\))|(Segundo módulo \(Frontend Avançado\))|(Terceiro módulo \(Introdução ao Backend\))|(Quarto módulo \(Backend Avançado\))/i,
+        "Módulo inválido, deve ser exatamente igual um desses: Primeiro módulo (Introdução ao Frontend) Segundo módulo (Frontend Avançado) Terceiro módulo (Introdução ao Backend) Quarto módulo (Backend Avançado)"
+      )
+      .required("Campo Obrigatório"),
     passwordConfirm: yup
       .string()
       .oneOf([yup.ref("password")], "Senhas Diferentes")
