@@ -13,6 +13,7 @@ function Dashboard({ authenticated }) {
   const [token] = useState(
     JSON.parse(localStorage.getItem("@kenzieHub:token")) || ""
   );
+  const [userData, setUserData] = useState([]);
   const { register, handleSubmit } = useForm();
 
   function loadTechs() {
@@ -33,8 +34,20 @@ function Dashboard({ authenticated }) {
         }));
         setTechs(apiTechs);
       })
+      .then((response) => setUserData(response.data))
       .catch((err) => console.log(err));
   }
+
+  const removeTech = (id) => {
+    const newTechs = techs.filter((tech) => tech.id !== id);
+    api
+      .delete(`/users/techs/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((_) => setTechs(newTechs));
+  };
 
   useEffect(() => {
     loadTechs();
@@ -59,6 +72,7 @@ function Dashboard({ authenticated }) {
       )
       .then((_) => loadTechs());
   };
+  console.log(techs);
 
   if (!authenticated) {
     return <Redirect to="/login" />;
@@ -66,7 +80,7 @@ function Dashboard({ authenticated }) {
   return (
     <Container>
       <InputContainer onSubmit={handleSubmit(onSubmit)}>
-        <h3>Nome</h3>
+        <h3>Bem-vindo {userData.name}</h3>
         <section>
           <Input
             icon={FiEdit2}
@@ -90,7 +104,7 @@ function Dashboard({ authenticated }) {
             title={task.title}
             date={task.created_at}
             mastery={task.status}
-            onClick={() => {}}
+            onClick={() => removeTech(task.id)}
           />
         ))}
       </TechsContainer>
