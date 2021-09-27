@@ -1,4 +1,5 @@
 import Button from "../../Components/Button";
+import { Redirect, useHistory } from "react-router";
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { Container, Content, AnimationContainer, Background } from "./styles";
@@ -6,8 +7,10 @@ import Input from "../../Components/Input/index";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import api from "../../services/api";
+import { toast } from "react-toastify";
 
-function SignUp() {
+function SignUp({ authenticated, setAuthenticated }) {
   const schema = yup.object().shape({
     name: yup.string().required("Campo Obrigatório"),
     email: yup.string().email("Email inválido").required("Campo Obrigatório"),
@@ -19,12 +22,9 @@ function SignUp() {
         "Senha deve conter ao menos uma letra maiúscula\n, uma minúscula, um número e um caracter especial!"
       )
       .required("Campo Obrigatório"),
-    bio: yup
-      .string()
-      .min(50, "Mínimo de 50 caracteres")
-      .required("Campo Obrigatório"),
+    bio: yup.string().required("Campo Obrigatório"),
     contact: yup.string().required("Campo Obrigatório"),
-    module: yup.string().required("Campo Obrigatório"),
+    course_module: yup.string().required("Campo Obrigatório"),
     passwordConfirm: yup
       .string()
       .oneOf([yup.ref("password")], "Senhas Diferentes")
@@ -39,9 +39,29 @@ function SignUp() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmitFunction = (data) => {
-    console.log(data);
+  const history = useHistory();
+
+  const onSubmitFunction = ({
+    name,
+    email,
+    password,
+    bio,
+    contact,
+    course_module,
+  }) => {
+    const user = { name, email, bio, password, contact, course_module };
+    api
+      .post("/users", user)
+      .then((_) => {
+        toast.success("Sucesso ao criar a conta");
+        return history.push("/login");
+      })
+      .catch((_) => toast.error("Erro ao criar a conta"));
   };
+
+  if (authenticated) {
+    return <Redirect to="/dashboard" />;
+  }
   return (
     <Container>
       <Background />
@@ -86,8 +106,8 @@ function SignUp() {
               icon={FiUser}
               label="Módulo Atual"
               placeholder="Qual o seu módulo no curso atualmente?"
-              name="module"
-              error={errors.module?.message}
+              name="course_module"
+              error={errors.course_module?.message}
             />
             <Input
               register={register}
